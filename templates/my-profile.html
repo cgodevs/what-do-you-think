@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container" style="height: 100%; margin: 20px auto 150px auto;">
+        <div class="row">
+            <div class="col-lg-4">
+
+            <!-- My Profile Info Options -->
+            <div class="card" style="width: 100%; margin-bottom: 10px">
+              <div class="card-header bg-secondary" style="  font-weight: bold; text-align: center">   Profile Info    </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><a href="{{ url_for('my_profile', menu_action='reset-pw') }}">Reset Password</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('my_profile', menu_action='reset-address') }}">Reset E-mail Address</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('my_profile', menu_action='sent-questions') }}">My Questions</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('my_profile', menu_action='dms') }}">My DMs</a></li>
+                    <li class="list-group-item"><a href="{{ url_for('user_page', username=current_user.name) }}">My User Page</a></li>
+                  </ul>
+              </div>
+            </div>
+
+            <!-- Menu Action-->
+            {% block action %}
+            {% endblock %}
+
+        </div>
+    </div>
+
+{% endblock %}

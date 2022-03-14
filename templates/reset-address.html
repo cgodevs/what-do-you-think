@@ -1,0 +1,25 @@
+{% extends 'my-profile.html' %}
+
+{% block action %}
+<div class="col-lg-8">
+    <div class="card">
+          <div class="card-header" style="text-align: center">
+            Reset Address
+          </div>
+          <div class="card-body">
+              <form action="{{ url_for('my_profile', menu_action='reset-address') }}" method="post">
+                  {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                        {% for message in messages %}
+                          <p class="text-primary" style="margin: 0.5rem auto">{{ message }}</p>
+                        {% endfor %}
+                      {% endif %}
+                  {% endwith %}
+                <h5 class="card-title" style="margin:0">New E-mail Address</h5>
+                <input name="new-address" type="email" style="width:70%"><br><br>
+                <button type="submit" href="#" class="btn btn-dark btn-sm">Reset</button>
+              </form>
+          </div>
+    </div>
+</div>
+{% endblock %}

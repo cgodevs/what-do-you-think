@@ -40,7 +40,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(100), unique=True)
     questions = relationship("Question", back_populates="author")
     comments = relationship("Comment", back_populates="comment_author")
 
@@ -68,6 +68,7 @@ class Comment(db.Model):
     # ***************Child Relationship*************#
     question_id = db.Column(db.Integer, db.ForeignKey("questions.id"))
     parent_question = relationship("Question", back_populates="comments")
+
 
 
 db.create_all()
@@ -145,9 +146,43 @@ def new_question():
     return render_template('new-question.html', form=question_form)
 
 
-@app.route('/my-profile')
-def my_profile():
-    pass
+@app.route('/my-profile/<menu_action>', methods=['GET', 'POST'])
+def my_profile(menu_action):
+    if menu_action == 'reset-pw':
+        if request.method == 'POST':
+            old_pw = request.form.get("old-pw")
+            new_pw = request.form.get("new-pw")
+            database_match_pw = User.query.filter_by(email=current_user.email).first().password
+            if old_pw == "" or new_pw == "":
+                pass
+            elif not check_password_hash(database_match_pw, old_pw):
+                flash('Password incorrect.')
+            elif check_password_hash(database_match_pw, new_pw):
+                flash('New password cannot be equal to the last one.')
+            else:
+                User.query.filter_by(email=current_user.email).first().password = generate_password_hash(new_pw, method='pbkdf2:sha256', salt_length=8)
+                db.session.commit()
+                flash('Password changed successfully!.')
+        return render_template('reset-pw.html')
+    elif menu_action == 'reset-address':
+        if request.method == 'POST':
+            new_address = request.form.get("new-address")
+            User.query.filter_by(email=current_user.email).first().email = new_address
+            db.session.commit()
+            flash('Address  changed successfully')
+        return render_template('reset-address.html')
+    elif menu_action == 'sent-questions':
+        user_questions = Question.query.filter_by(author=current_user)
+        return render_template('sent-questions.html', questions=user_questions)
+    elif menu_action == 'dms':
+        return render_template('dms.html')
+
+
+@app.route('/user/<username>')
+def user_page(username):
+    user_obj = User.query.filter_by(name=username).first()
+    return render_template('user-profile.html', user=user_obj)
+
 
 
 if __name__ == "__main__":

@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Wonder Full</title>
+        <title>✨ Wonder Full ✨</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="../static/assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="../static/css/styles.css" rel="stylesheet" />
     </head>
-    <body class="bg-dark">
+    <body class="bg-dark" style="height: 100%">
         <!-- Responsive navbar-->
         <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" >Wonder Full</a>
+                <a class="navbar-brand" >✨Wonder Full</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -31,7 +31,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Log in</a></li>
                         {% endif %}
                         {% if current_user.is_authenticated %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('my_profile') }}">My Profile</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('my_profile', menu_action='sent-questions')}}">My Profile</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Log Out</a></li>
                         {% endif %}
                     </ul>
