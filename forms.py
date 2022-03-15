@@ -21,3 +21,8 @@ class NewQuestion(FlaskForm):
     title = StringField("Question Title", validators=[DataRequired()])
     body = CKEditorField("Question Body", validators=[DataRequired()])
     submit = SubmitField("Ask")
+
+
+class DMForm(FlaskForm):
+    body = TextAreaField("Message", validators=[DataRequired()])
+    submit = SubmitField("Send")

@@ -43,6 +43,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100), unique=True)
     questions = relationship("Question", back_populates="author")
     comments = relationship("Comment", back_populates="comment_author")
+    received_dms = relationship("DirectMessage", back_populates="recipient")
 
 
 class Question(db.Model):
@@ -70,6 +71,15 @@ class Comment(db.Model):
     parent_question = relationship("Question", back_populates="comments")
 
 
+class DirectMessage(db.Model):
+    __tablename__ = "dms"
+    id = db.Column(db.Integer, primary_key=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    recipient = relationship("User", back_populates="received_dms")
+    author = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.String(250), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+
 
 db.create_all()
 
@@ -80,14 +90,20 @@ def home():
         return render_template("full_homepage.html")
     return render_template("blank_start.html")
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     register_form = RegisterUserForm()
     if register_form.validate_on_submit():
-        database_match = User.query.filter_by(email=register_form.email.data).first()
-        if database_match:
+        database_email_match = User.query.filter_by(email=register_form.email.data).first()
+        if database_email_match:
             error = 'E-mail already exists'
             flash('This e-mail adress is already registered. Try another one.')
+            return redirect(url_for('register', error=error))
+        database_username_match = User.query.filter_by(name=register_form.name.data).first()
+        if database_username_match:
+            error = 'Username already exists'
+            flash('This username is already in use. Try another one.')
             return redirect(url_for('register', error=error))
         new_user = User(
             email=register_form.email.data,
@@ -183,6 +199,30 @@ def user_page(username):
     user_obj = User.query.filter_by(name=username).first()
     return render_template('user-profile.html', user=user_obj)
 
+
+@app.route('/<username>/send-dm', methods=['GET', 'POST'])
+def send_dm(username):
+    user_obj = User.query.filter_by(name=username).first()
+    dm_form = DMForm()
+    if dm_form.validate_on_submit():
+        text = dm_form.body.data
+        new_dm = DirectMessage(recipient=user_obj,
+                               recipient_id=user_obj.id,
+                               author=current_user.name,
+                               date=date.today().strftime("%B %d, %Y"),
+                               text=text)
+        db.session.add(new_dm)
+        db.session.commit()
+        return render_template('user-profile.html', user=user_obj)
+    return render_template('send-dm.html', user=user_obj, form=dm_form)
+
+
+@app.route("/delete/<int:dm_id>")
+def delete_post(dm_id):
+    dm_to_delete = DirectMessage.query.get(dm_id)
+    db.session.delete(dm_to_delete)
+    db.session.commit()
+    return redirect(url_for('my_profile', menu_action='dms'))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container text-white" style="height: 70%">
+    <h3 style="text-align: center">Send a message to {{user.name}}</h3>
+    {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary btn-sm"}) }}
+</div>
+{% endblock %}
