@@ -14,7 +14,7 @@
     <div style="margin-top: 10px">
     <h4 class="text-white" style="margin: 40px auto 10px 20px">All Questions</h4>
     {% for question in user.questions %}
-        <a href="#">{{ question.title[:50] }}{% if question.title[50]: %}... {% endif %}</a><br>
+        <a href="{{ url_for('show_question', q_id=question.id) }}">{{ question.title[:50] }}{% if question.title[50]: %}... {% endif %}</a><br>
     {% endfor %}
     </div>
 </div>

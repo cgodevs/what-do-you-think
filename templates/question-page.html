@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+
+<div >
+    <div id="question-display" class="container"">
+        <div class="card">
+          <h5 class="card-header">{{ question.title }}</h5>
+          <div class="card-body blockquote mb-0">
+            <p class="card-text">{{ question.body | safe}}</p>
+            <footer class="blockquote-footer" style="margin-top: 5%">
+                <a href="{{ url_for('user_page', username=question.author.name) }}">{{ question.author.name }}</a>
+                | {{ question.date }} |
+                <strong>{{ question.upvotes }}</strong> upvotes |
+                <a href="{{ url_for('upvote_question', q_id=question.id) }}" class="btn btn-light" style="float: right">Upvote 👍</a>
+            </footer>
+          </div>
+        </div>
+    </div>
+    <div id="comments" style="max-width: 70%; margin: 1% auto">
+        <h4 class="text-white" style="margin: 20px 0 10px 0">Comments</h4>
+        {% for comment in question.comments: %}
+            <div class="card bg-light mb-3">
+              <div class="card-body">
+                <p class="card-text">
+                    {% if current_user.name == comment.comment_author.name %}
+                        <a href="{{ url_for('delete_comment', q_id=question.id, comment_id=comment.id) }}" style="text-decoration: none; color: red">×</a>
+                    {% endif %}
+                    [<a href="{{ url_for('user_page', username=comment.comment_author.name) }}">
+                    {{ comment.comment_author.name }}
+                    </a>]: {{ comment.text }}</p>
+              </div>
+            </div>
+        {% endfor %}
+        <div style="width: 70%; margin: 0 auto; text-align: center">
+            {{ wtf.quick_form(comment_form, novalidate=True, button_map={"submit": "success btn-sm"}) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

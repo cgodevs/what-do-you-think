@@ -53,8 +53,9 @@ class Question(db.Model):
     author = relationship("User", back_populates="questions")
     title = db.Column(db.String(140), nullable=False)
     date = db.Column(db.String(250), nullable=False)
+    category = db.Column(db.String(140), nullable=False)
     body = db.Column(db.Text, nullable=False)
-
+    upvotes = db.Column(db.Integer, default=0)
     # ***************Parent Relationship*************#
     comments = relationship("Comment", back_populates="parent_question")
 
@@ -152,9 +153,11 @@ def new_question():
     if question_form.validate_on_submit():
         title = question_form.title.data
         text = question_form.body.data
+        category = question_form.category.data
         question = Question(author=current_user,
                             title=title,
                             date=date.today().strftime("%B %d, %Y"),
+                            category=category,
                             body=text)
         db.session.add(question)
         db.session.commit()
@@ -217,12 +220,55 @@ def send_dm(username):
     return render_template('send-dm.html', user=user_obj, form=dm_form)
 
 
-@app.route("/delete/<int:dm_id>")
-def delete_post(dm_id):
+@app.route("/delete-dm/<int:dm_id>")
+def delete_dm(dm_id):
     dm_to_delete = DirectMessage.query.get(dm_id)
     db.session.delete(dm_to_delete)
     db.session.commit()
     return redirect(url_for('my_profile', menu_action='dms'))
+
+
+@app.route("/question/<int:q_id>", methods=['GET', 'POST'])
+def show_question(q_id):
+    comment_form = CommentForm()
+    db_question = Question.query.get(q_id)
+    if db_question:
+        if comment_form.validate_on_submit():
+            comment_text = comment_form.body.data
+            new_comment = Comment(author_id=current_user.id,
+                                  comment_author=current_user,
+                                  text=comment_text,
+                                  question_id=q_id,
+                                  parent_question=db_question)
+            db.session.add(new_comment)
+            db.session.commit()
+        return render_template('question-page.html', question=db_question, comment_form=comment_form)
+    else:
+        return abort(404)
+
+
+@app.route("/upvote/<int:q_id>")
+def upvote_question(q_id):
+    db_question = Question.query.get(q_id)
+    db_question.upvotes += 1
+    db.session.commit()     # a bug here is the user can upvote the post infinitely
+    return redirect(url_for('show_question', q_id=q_id))
+
+
+@app.route("/delete-question/<int:q_id>")
+def delete_question(q_id):
+    q_to_delete = Question.query.get(q_id)
+    db.session.delete(q_to_delete)
+    db.session.commit()
+    return redirect(url_for('my_profile', menu_action='sent-questions'))
+
+
+@app.route("/delete-comment/<int:q_id>/<int:comment_id>")
+def delete_comment(q_id, comment_id):
+    comment_to_delete = Comment.query.get(comment_id)
+    db.session.delete(comment_to_delete)
+    db.session.commit()
+    return redirect(url_for('show_question', q_id=q_id))
 
 
 if __name__ == "__main__":
