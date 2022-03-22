@@ -29,7 +29,7 @@
                     {% endif %}
                     [<a href="{{ url_for('user_page', username=comment.comment_author.name) }}">
                     {{ comment.comment_author.name }}
-                    </a>]: {{ comment.text }}</p>
+                    </a>] ({{ comment.date }}): {{ comment.text }}</p>
               </div>
             </div>
         {% endfor %}

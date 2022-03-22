@@ -8,7 +8,7 @@
         <!-- Question -->
         <div class="card col-lg-12" style="margin: 5px auto 5px auto">
             <div class="card-body">
-                <div class="small text-muted">{{ question.category }} | {{ question.date }}</div>
+                <div class="small text-muted">{{ question.category }} | {{ question.date.strftime("%B %d, %Y") }}</div>
                 <h2 class="card-title h4">{{ question.title[:51] }}{% if question.title[50]: %}... {% endif %}</h2>
                 <p class="card-text">{{ question.body[:101] | safe }}{% if question.body[100]: %}... {% endif %}</p>
                 <div id="buttons" style="position: relative">

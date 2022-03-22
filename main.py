@@ -1,10 +1,11 @@
 from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
-from datetime import date
+from datetime import date, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import *
+from math import ceil
 from flask_ckeditor import CKEditor
 from functools import wraps
 from sqlalchemy import Table, Column, Integer, ForeignKey
@@ -52,7 +53,7 @@ class Question(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     author = relationship("User", back_populates="questions")
     title = db.Column(db.String(140), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.Date, nullable=False)
     category = db.Column(db.String(140), nullable=False)
     body = db.Column(db.Text, nullable=False)
     upvotes = db.Column(db.Integer, default=0)
@@ -65,6 +66,7 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     comment_author = relationship("User", back_populates="comments")
+    date = db.Column(db.Date, nullable=False)
     text = db.Column(db.Text, nullable=False)
 
     # ***************Child Relationship*************#
@@ -78,7 +80,7 @@ class DirectMessage(db.Model):
     recipient_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     recipient = relationship("User", back_populates="received_dms")
     author = db.Column(db.String(250), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.Date, nullable=False)
     text = db.Column(db.Text, nullable=False)
 
 
@@ -88,8 +90,34 @@ db.create_all()
 @app.route('/')
 def home():
     if current_user.is_authenticated:
-        return render_template("full_homepage.html")
+        return mainpage(1)
     return render_template("blank_start.html")
+
+
+@app.route('/mainpage/<int:pagination>')
+def mainpage(pagination):
+    if current_user.is_authenticated:
+        if db.session.query(Question).first():
+            all_latest_questions = db.session.query(Question)\
+                .filter(date.today() - Question.date <= timedelta(days=10))\
+                .order_by(Question.id.desc())
+            number_of_pages = int(ceil(all_latest_questions.count() / 6))
+            page_questions = all_latest_questions[(pagination - 1) * 6: (pagination - 1) * 6 + 6]
+            most_upvoted_question = db.session.query(Question).order_by(Question.id.desc()).first()     # last record
+            for question in all_latest_questions:
+                if question.upvotes > most_upvoted_question.upvotes:
+                    most_upvoted_question = question    # featured question is the most upvoted in the last 10 days or the last ever record
+            return render_template("full_homepage.html",
+                                   pagination=pagination,
+                                   featured_question=most_upvoted_question,
+                                   questions=page_questions,
+                                   pages=number_of_pages)
+    return render_template("blank_start.html")
+
+
+@app.route('/about')
+def about():
+    return render_template("about.html")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -156,7 +184,7 @@ def new_question():
         category = question_form.category.data
         question = Question(author=current_user,
                             title=title,
-                            date=date.today().strftime("%B %d, %Y"),
+                            date=date.today(),  # .strftime("%B %d, %Y")
                             category=category,
                             body=text)
         db.session.add(question)
@@ -212,7 +240,7 @@ def send_dm(username):
         new_dm = DirectMessage(recipient=user_obj,
                                recipient_id=user_obj.id,
                                author=current_user.name,
-                               date=date.today().strftime("%B %d, %Y"),
+                               date=date.today(),   #.strftime("%B %d, %Y")
                                text=text)
         db.session.add(new_dm)
         db.session.commit()
@@ -237,6 +265,7 @@ def show_question(q_id):
             comment_text = comment_form.body.data
             new_comment = Comment(author_id=current_user.id,
                                   comment_author=current_user,
+                                  date=date.today(),    # .strftime("%B %d, %Y")
                                   text=comment_text,
                                   question_id=q_id,
                                   parent_question=db_question)
