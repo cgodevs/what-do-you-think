@@ -8,6 +8,7 @@ from forms import *
 from math import ceil
 from flask_ckeditor import CKEditor
 from functools import wraps
+from sqlalchemy import or_
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -298,6 +299,32 @@ def delete_comment(q_id, comment_id):
     db.session.delete(comment_to_delete)
     db.session.commit()
     return redirect(url_for('show_question', q_id=q_id))
+
+
+@app.route("/search/<category>")
+def search(category):
+    chosen_category = category
+    all_category_questions = db.session.query(Question) \
+        .filter_by(category=chosen_category) \
+        .order_by(Question.id.desc())
+    return render_template('category-questions.html',
+                           questions=all_category_questions,
+                           category=category)
+
+
+@app.route("/search/by-words", methods=['GET', 'POST'])
+def search_tool():
+    if request.method == 'POST':
+        search_keys = request.form.get("search-keys")
+        match_questions = db.session.query(Question) \
+            .filter(or_(Question.body.contains(search_keys),Question.title.contains(search_keys))) \
+            .order_by(Question.id.desc())
+    return render_template('search-tool.html', questions=match_questions)
+
+
+@app.route("/search/all-categories")
+def all_categories():
+    return render_template('all-categories.html', categories=CATEGORIES)
 
 
 if __name__ == "__main__":

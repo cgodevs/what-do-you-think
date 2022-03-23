@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-left: 10px; height: 100%">
+    <div style="margin-top: 10px">
+    <h4 class="text-white" style="margin: 40px auto 10px 20px">{{ category }} Questions </h4>
+    {% if questions.count() == 0: %}
+        <p class="text-white" style="margin-left: 2%">No questions were found for the key-words used</p>
+    {% endif %}
+    {% for question in questions: %}
+        <div class="card col-lg-12" style="margin: 5px auto 5px auto">
+            <div class="card-body">
+                <div class="small text-muted">{{ question.author.name }} | {{ question.date.strftime("%B %d, %Y") }}</div>
+                <h2 class="card-title h4">{{ question.title[:51] }}{% if question.title[50]: %}... {% endif %}</h2>
+                <p class="card-text">{{ question.body[:101] | safe }}{% if question.body[100]: %}... {% endif %}</p>
+                <div id="buttons" style="position: relative">
+                    <a class="btn btn-dark" href="{{ url_for('show_question', q_id=question.id) }}">Go to Question</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

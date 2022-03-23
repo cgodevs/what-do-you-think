@@ -4,6 +4,10 @@ from wtforms.validators import DataRequired
 from flask_ckeditor import CKEditorField
 
 
+CATEGORIES = ['Career', 'Relationship', 'Selfies', 'Fitness', 'Risks', 'Games',
+              'Programming', 'Writers', 'Pictures', 'Sexuality']
+
+
 class RegisterUserForm(FlaskForm):
     name = StringField("Username", validators=[DataRequired()])
     email = StringField("E-mail", validators=[DataRequired()])
@@ -20,11 +24,7 @@ class LoginForm(FlaskForm):
 class NewQuestion(FlaskForm):
     title = StringField("Question Title", validators=[DataRequired()])
     category = SelectField("Pick a Category",
-                           choices=[('Career', 'Career'), ('Relationship', 'Relationship'),
-                                    ('Selfies', 'Selfies'), ('Fitness', 'Fitness'),
-                                    ('Risks', 'Risks'), ('Games', 'Games'),
-                                    ('Programming', 'Programming'), ('Writers', 'Writers'),
-                                    ('Pictures', 'Pictures')])
+                           choices=[(category, category) for category in CATEGORIES])
     body = CKEditorField("Question Body", validators=[DataRequired()])
     submit = SubmitField("Ask")
 
