@@ -18,11 +18,10 @@ from sqlalchemy.ext.declarative import declarative_base
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 bootstrap = Bootstrap(app)
-
 ckeditor = CKEditor(app)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")  # 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///database.db")  # 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -100,9 +99,7 @@ def home():
 def mainpage(pagination):
     if current_user.is_authenticated:
         if db.session.query(Question).first():
-            all_latest_questions = db.session.query(Question)\
-                .filter(date.today() - Question.date <= timedelta(days=10))\
-                .order_by(Question.id.desc())
+            all_latest_questions = db.session.query(Question).order_by(Question.id.desc()).filter(date.today() - Question.date <= timedelta(days=10))
             number_of_pages = int(ceil(all_latest_questions.count() / 6))
             page_questions = all_latest_questions[(pagination - 1) * 6: (pagination - 1) * 6 + 6]
             most_upvoted_question = db.session.query(Question).order_by(Question.id.desc()).first()     # last record
