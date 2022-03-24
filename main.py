@@ -99,7 +99,7 @@ def home():
 def mainpage(pagination):
     if current_user.is_authenticated:
         if db.session.query(Question).first():
-            all_latest_questions = db.session.query(Question).order_by(Question.id.desc()).filter(date.today() - Question.date <= timedelta(days=10))
+            all_latest_questions = db.session.query(Question).order_by(Question.id.desc()).filter(date.today() - Question.date <= 10)
             number_of_pages = int(ceil(all_latest_questions.count() / 6))
             page_questions = all_latest_questions[(pagination - 1) * 6: (pagination - 1) * 6 + 6]
             most_upvoted_question = db.session.query(Question).order_by(Question.id.desc()).first()     # last record
