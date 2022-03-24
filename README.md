@@ -1,4 +1,4 @@
-[https://whatdoyouthink.herokuapp.com]: 	"Click here to go to the Heroku hosted webpage based on this repo"
+[Click here to go to the Heroku hosted webpage based on this repo](https://whatdoyouthink.herokuapp.com) 
 
 
 
@@ -18,24 +18,24 @@ Made with Flask, hosted on Heroku.
 
 ###### Start Page for non-authenticated users.
 
-![start-page](C:\Users\caroline.oliveira\PycharmProjects\what-do-you-think\static\assets\start-page.png)
+![start-page](https://github.com/cgodevs/what-do-you-think/blob/master/static/assets/start-page.png)
 
 ###### Post a New Question
 
-![new-question](C:\Users\caroline.oliveira\PycharmProjects\what-do-you-think\static\assets\new-question.png)
+![new-question](https://github.com/cgodevs/what-do-you-think/blob/master/static/assets/new-question.png)
 
 ###### Home Page
 
-![homepage](C:\Users\caroline.oliveira\PycharmProjects\what-do-you-think\static\assets\homepage.png)
+![homepage](https://github.com/cgodevs/what-do-you-think/blob/master/static/assets/homepage.png)
 
 ###### Question and Comments Page
 
-![question-page](C:\Users\caroline.oliveira\PycharmProjects\what-do-you-think\static\assets\question-page.png)
+![question-page](https://github.com/cgodevs/what-do-you-think/blob/master/static/assets/question-page.png)
 
 ###### User Profile Page
 
-![user-profile](C:\Users\caroline.oliveira\PycharmProjects\what-do-you-think\static\assets\user-profile.png)
+![user-profile](https://github.com/cgodevs/what-do-you-think/blob/master/static/assets/user-profile.png)
 
 ###### User Page
 
-![user-page](C:\Users\caroline.oliveira\PycharmProjects\what-do-you-think\static\assets\user-page.png)
+![user-page](https://github.com/cgodevs/what-do-you-think/blob/master/static/assets/user-page.png)
